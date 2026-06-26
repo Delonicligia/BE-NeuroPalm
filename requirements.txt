@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic-settings
+pydantic[email]
+sqlalchemy
+aiomysql
+python-multipart
+Pillow
+aiofiles
+python-jose[cryptography]
+argon2-cffi
+numpy
+tensorflow
+gunicorn
+slowapi
