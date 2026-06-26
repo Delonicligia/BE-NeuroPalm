@@ -4,29 +4,25 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Copy and install python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code and uploads folder template
+# Copy all source files
 COPY app/ ./app/
-COPY uploads/ ./uploads/
 
-# Create logs directory
-RUN mkdir -p logs
+# Create necessary directories for uploads and logs
+RUN mkdir -p uploads/sawit logs
 
-# Run as non-root user for security
+# Adjust permissions for non-root execution
 RUN useradd -m appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app.main:app", \
-     "--workers", "4", \
-     "--worker-class", "uvicorn.workers.UvicornWorker", \
-     "--bind", "0.0.0.0:8000", \
-     "--timeout", "120"]
+# Menggunakan uvicorn secara langsung (single-process) untuk menghemat RAM di Render (Limit 512MB)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
